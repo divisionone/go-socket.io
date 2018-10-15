@@ -1,9 +1,10 @@
 package socketio
 
 import (
-	"github.com/divisionone/go-engine.io"
 	"net/http"
 	"time"
+
+	"github.com/divisionone/go-engine.io"
 )
 
 // Server is the server of socket.io.
@@ -52,6 +53,11 @@ func (s *Server) Count() int {
 	return s.eio.Count()
 }
 
+// LenRoom returns the current number of connected clients in room
+func (s *Server) LenRoom(room string) int {
+	return s.namespace.broadcast.Len(room)
+}
+
 // SetAllowRequest sets the middleware function when a connection is established. If a non-nil value is returned, the connection won't be established. Default will allow all connections.
 func (s *Server) SetAllowRequest(f func(*http.Request) error) {
 	s.eio.SetAllowRequest(f)
@@ -88,8 +94,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // BroadcastTo is a server level broadcast function.
-func (s *Server) BroadcastTo(room, message string, args ...interface{}) {
-	s.namespace.BroadcastTo(room, message, args...)
+func (s *Server) BroadcastTo(room, event string, args ...interface{}) {
+	s.namespace.BroadcastTo(room, event, args...)
 }
 
 func (s *Server) loop() {

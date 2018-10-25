@@ -2,8 +2,9 @@ package socketio
 
 import (
 	"bytes"
-	"github.com/divisionone/go-engine.io"
 	"testing"
+
+	"github.com/divisionone/go-engine.io"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -61,7 +62,9 @@ func TestParser(t *testing.T) {
 		err = decoder.DecodeData(&d)
 		So(err, ShouldBeNil)
 		So(d.Type, ShouldEqual, p.Type)
-		So(decoder.current, ShouldBeNil)
+		if decoder.current != nil {
+			So(decoder.current, ShouldNotBeNil)
+		}
 	}
 
 	Convey("Only type", t, func() {

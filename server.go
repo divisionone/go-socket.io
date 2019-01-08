@@ -106,7 +106,6 @@ func (s *Server) loop() {
 			return
 		}
 		s := newSocket(conn, s.baseHandler)
-		t1 := time.Now()
 		go func(s *socket) {
 			err := s.loop()
 			conn.Close() // doesnt hurt to add this here, and also forces close on exiting early, like a timeout

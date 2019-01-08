@@ -1,10 +1,11 @@
 package socketio
 
 import (
+	"log"
 	"net/http"
 	"time"
 
-	"github.com/divisionone/go-engine.io"
+	engineio "github.com/divisionone/go-engine.io"
 )
 
 // Server is the server of socket.io.
@@ -105,8 +106,17 @@ func (s *Server) loop() {
 			return
 		}
 		s := newSocket(conn, s.baseHandler)
+		t1 := time.Now()
 		go func(s *socket) {
-			s.loop()
+			err := s.loop()
+			conn.Close() // doesnt hurt to add this here, and also forces close on exiting early, like a timeout
+			switch err.Error() {
+			case "timeout":
+				log.Println("Closing due to timeout")
+			case "eof", "EOF":
+			default:
+				log.Println("Closing due to unknown condition", err.Error())
+			}
 		}(s)
 	}
 }

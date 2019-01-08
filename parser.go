@@ -8,8 +8,9 @@ import (
 	"io"
 	"io/ioutil"
 	"strconv"
+	"time"
 
-	"github.com/divisionone/go-engine.io"
+	engineio "github.com/divisionone/go-engine.io"
 )
 
 const Protocol = 4
@@ -185,11 +186,34 @@ func (d *decoder) Decode(v *packet) error {
 	reader := bufio.NewReader(r)
 
 	v.Id = -1
+	/*
+		// base system does this - change below does it with a timeout
+		t, err := reader.ReadByte()
+		if err != nil {
+			return err
+		}
+	*/
 
-	t, err := reader.ReadByte()
-	if err != nil {
-		return err
+	// read 1 byte, but do it in the background
+	input := make(chan byte, 1)
+	go func() {
+		t, err := reader.ReadByte()
+		if err != nil {
+			return
+		}
+		input <- t
+	}()
+
+	var t byte
+	select {
+	case t = <-input:
+	// read a byte from the socket
+	case <-time.After(5000 * time.Millisecond):
+		return fmt.Errorf("timeout")
+		// this will end up closing the connection, which will terminate the goroutine above
+		// and cleanup the channel
 	}
+
 	v.Type = packetType(t - '0')
 
 	if v.Type == _BINARY_EVENT || v.Type == _BINARY_ACK {

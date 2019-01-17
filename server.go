@@ -106,7 +106,7 @@ func (s *Server) loop() {
 		}
 		s := newSocket(conn, s.baseHandler)
 		go func(s *socket) {
-			err := s.loop()
+			s.loop()
 		}(s)
 	}
 }

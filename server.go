@@ -1,7 +1,6 @@
 package socketio
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -108,14 +107,6 @@ func (s *Server) loop() {
 		s := newSocket(conn, s.baseHandler)
 		go func(s *socket) {
 			err := s.loop()
-			conn.Close() // doesnt hurt to add this here, and also forces close on exiting early, like a timeout
-			switch err.Error() {
-			case "timeout":
-				log.Println("Closing due to timeout")
-			case "eof", "EOF":
-			default:
-				log.Println("Closing due to unknown condition", err.Error())
-			}
 		}(s)
 	}
 }

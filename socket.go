@@ -1,13 +1,10 @@
 package socketio
 
 import (
-	"log"
 	"net/http"
 	"sync"
-	"time"
 
 	engineio "github.com/divisionone/go-engine.io"
-	"github.com/steveoc64/memdebug"
 )
 
 // Socket is the socket object of socket.io.
@@ -124,7 +121,6 @@ func (s *socket) sendId(args []interface{}) (int, error) {
 
 func (s *socket) loop() error {
 	defer func() {
-		log.Println("end of socket loop")
 		s.LeaveAll()
 		p := packet{
 			Type: _DISCONNECT,
@@ -143,16 +139,11 @@ func (s *socket) loop() error {
 	}
 	s.socketHandler.onPacket(nil, &p)
 	for {
-		t1 := time.Now()
-		log.Println("start decode socket")
 		decoder := newDecoder(s.conn)
-		memdebug.Print(t1, "decoding socket", s.conn)
 		var p packet
 		if err := decoder.Decode(&p); err != nil {
-			memdebug.Print(t1, "failed to decode from socket", err)
 			return err
 		}
-		memdebug.Print(t1, "packet", p)
 		ret, err := s.socketHandler.onPacket(decoder, &p)
 		if err != nil {
 			return err
@@ -178,12 +169,6 @@ func (s *socket) loop() error {
 			}
 		case _DISCONNECT:
 			return nil
-		case _ERROR:
-			memdebug.Print(t1, "got an error it seems")
-		case _BINARY_ACK, _ACK:
-			// do nothing
-		default:
-			memdebug.Print(t1, "unknown type of socket event", p.Type.String())
 		}
 	}
 }

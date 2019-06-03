@@ -52,7 +52,10 @@ func (r *messageReader) Read(b []byte) (int, error) {
 		b[0] = '['
 		n, err := r.reader.Read(b[1:])
 		if err != nil {
-			return -1, err
+			if n == 0 {
+				return 0,err
+			}
+			return n+1, err
 		}
 		return n + 1, err
 	}

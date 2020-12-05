@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/divisionone/go-engine.io"
+	engineio "github.com/divisionone/go-engine.io"
 )
 
 // Server is the server of socket.io.

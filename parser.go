@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	"github.com/divisionone/go-engine.io"
+	engineio "github.com/divisionone/go-engine.io"
 )
 
 const Protocol = 4
@@ -185,11 +185,11 @@ func (d *decoder) Decode(v *packet) error {
 	reader := bufio.NewReader(r)
 
 	v.Id = -1
-
 	t, err := reader.ReadByte()
 	if err != nil {
 		return err
 	}
+
 	v.Type = packetType(t - '0')
 
 	if v.Type == _BINARY_EVENT || v.Type == _BINARY_ACK {
